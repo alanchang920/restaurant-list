@@ -35,6 +35,38 @@ app.get('/restaurants/new', (req, res) => {
   res.render('new', { css: 'show.css' })
 })
 
+app.get('/restaurants/:id', (req, res) => {
+  const id = req.params.id
+  Restaurant.findById(id)
+    .lean()
+    .then(restaurant => res.render('show', { restaurant, css: 'show.css' }))
+    .catch(error => console.log(error))
+})
+
+app.get('/search', (req, res) => {
+  let keyword = req.query.keyword.trim()
+  // find   
+  Restaurant.find({ $or: [{ name: new RegExp(keyword, 'i') }, { category: new RegExp(keyword, 'i') }] })
+    .lean()
+    .then(restaurants => {
+      // exception
+      if (!restaurants.length) {
+        keyword = `你的收藏沒有"${keyword}"的相關項目唷！`
+      }
+      // do the searching
+      res.render('index', { restaurants, keyword, css: 'index.css' })
+    })
+    .catch(error => console.log(error))
+})
+
+app.get('/restaurants/:id/edit', (req, res) => {
+  const id = req.params.id
+  Restaurant.findById(id)
+    .lean()
+    .then(restaurant => res.render('edit', { restaurant, css: 'show.css' }))
+    .catch(error => console.log(error))
+})
+
 app.post('/restaurants/new', (req, res) => {
   const name = req.body.name
   const category = req.body.category
@@ -58,7 +90,25 @@ app.post('/restaurants/new', (req, res) => {
     .catch(error => console.log(error))
 })
 
+app.post('/restaurants/:id/edit', (req, res) => {
+  const id = req.params.id
 
+  Restaurant.findById(id)
+    .then(restaurant => {
+      restaurant = Object.assign(restaurant, req.body)
+      restaurant.save()
+    })
+    .then(() => res.redirect(`/restaurants/${id}`))
+    .catch(error => console.log(error))
+})
+
+app.post('/restaurants/:id/delete', (req, res) => {
+  const id = req.params.id
+  Restaurant.findById(id)
+    .then(restaurant => restaurant.remove())
+    .then(() => res.redirect('/'))
+    .catch(error => console.log(error))
+})
 
 app.listen(port, () => {
   console.log(`Express is listening on http://localhost:${port}`)
