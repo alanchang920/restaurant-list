@@ -23,6 +23,12 @@ db.once('open', () => {
   console.log('mongodb connected!')
 })
 
+app.get('/', (req, res) => {
+  Restaurant.find()
+    .lean()
+    .then(restaurants => res.render('index', { restaurants, css: 'index.css' }))
+    .catch(error => console.log(error))
+})
 
 
 app.listen(port, () => {
