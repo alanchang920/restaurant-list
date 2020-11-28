@@ -2,6 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const methodOverride = require('method-override')
 const exphbs = require('express-handlebars')
+const handlebars = require('handlebars')
 
 const routes = require('./routes')
 require('./config/mongoose')
@@ -17,6 +18,15 @@ app.set('view engine', 'handlebars')
 
 app.use(express.static('public'), bodyParser.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
+
+handlebars.registerHelper('ifActive', function (sort, target, options) {
+  if (sort === target) {
+    return options.fn(this);
+  } else {
+    return options.inverse(this);
+  }
+})
+
 app.use(routes)
 
 
