@@ -6,6 +6,8 @@ const exphbs = require('express-handlebars')
 const handlebars = require('handlebars')
 
 const routes = require('./routes')
+
+const usePassport = require('./config/passport')
 require('./config/mongoose')
 
 const app = express()
@@ -23,6 +25,8 @@ app.use(session({
 
 app.use(express.static('public'), bodyParser.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
+
+usePassport(app)
 
 handlebars.registerHelper('ifActive', function (sort, target, options) {
   if (sort === target) {
