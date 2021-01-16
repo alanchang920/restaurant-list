@@ -4,7 +4,8 @@ const router = express.Router()
 const Restaurant = require('../../models/restaurant')
 
 router.get('/', (req, res) => {
-  Restaurant.find()
+  const userId = req.user._id
+  Restaurant.find({ userId })
     .lean()
     .sort({ _id: 'asc' })
     .then(restaurants => res.render('index', { restaurants, css: 'index.css' }))
@@ -13,8 +14,9 @@ router.get('/', (req, res) => {
 
 router.get('/search', (req, res) => {
   let keyword = req.query.keyword.trim()
+  const userId = req.user._id
 
-  Restaurant.find({ $or: [{ name: new RegExp(keyword, 'i') }, { category: new RegExp(keyword, 'i') }] })
+  Restaurant.find({ $or: [{ name: new RegExp(keyword, 'i') }, { category: new RegExp(keyword, 'i') }], userId })
     .lean()
     .then(restaurants => {
 
@@ -28,7 +30,8 @@ router.get('/search', (req, res) => {
 })
 
 router.get('/', (req, res) => {
-  Restaurant.find()
+  const userId = req.user._id
+  Restaurant.find({ userId })
     .lean()
     .sort({ name: 'asc' })
     .then(restaurants => res.render('index', {
@@ -39,8 +42,9 @@ router.get('/', (req, res) => {
 
 
 router.get('/asc', (req, res) => {
+  const userId = req.user._id
   const sort = req.path
-  Restaurant.find()
+  Restaurant.find({ userId })
     .lean()
     .sort({ name: 'asc' })
     .then(restaurants => res.render('index', {
@@ -50,8 +54,9 @@ router.get('/asc', (req, res) => {
 })
 
 router.get('/desc', (req, res) => {
+  const userId = req.user._id
   const sort = req.path
-  Restaurant.find()
+  Restaurant.find({ userId })
     .lean()
     .sort({ name: 'desc' })
     .then(restaurants => res.render('index', {
@@ -61,8 +66,9 @@ router.get('/desc', (req, res) => {
 })
 
 router.get('/location', (req, res) => {
+  const userId = req.user._id
   const sort = req.path
-  Restaurant.find()
+  Restaurant.find({ userId })
     .lean()
     .sort({ location: 'asc' })
     .then(restaurants => res.render('index', {
@@ -73,8 +79,9 @@ router.get('/location', (req, res) => {
 
 
 router.get('/category', (req, res) => {
+  const userId = req.user._id
   const sort = req.path
-  Restaurant.find()
+  Restaurant.find({ userId })
     .lean()
     .sort({ category: 'asc' })
     .then(restaurants => res.render('index', {
